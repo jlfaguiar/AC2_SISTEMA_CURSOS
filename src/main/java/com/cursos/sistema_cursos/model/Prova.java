@@ -1,7 +1,18 @@
 package com.cursos.sistema_cursos.model;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
-
+@Entity
+@Table(name="tb_provas")
 public class Prova {
+	
+	@Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
     private String nome;
     private Double nota;
     private boolean completo;
@@ -15,6 +26,9 @@ public class Prova {
         this.feedback = null;
     }
 
+    public Prova() {
+    }
+    
     // Método para avaliar prova com nota e feedback
     public void avaliarProva(Double nota, String feedback) {
         if (!this.completo) {
