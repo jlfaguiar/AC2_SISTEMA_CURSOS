@@ -1,36 +1,42 @@
 package com.cursos.sistema_cursos.model;
-import jakarta.persistence.Embedded;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+
+import com.cursos.sistema_cursos.value_objects.Feedback;
+import com.cursos.sistema_cursos.value_objects.NomeProva;
+import com.cursos.sistema_cursos.value_objects.Nota;
+import jakarta.persistence.*;
 
 @Entity
-@Table(name="tb_provas")
+@Table(name = "tb_provas")
 public class Prova {
-	
-	@Id
+
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
-    private String nome;
-    private Double nota;
+    private Long id;
+
+    @Embedded
+    private NomeProva nome;
+
+    @Embedded
+    private Nota nota;
+
     private boolean completo;
-    private String feedback;
+
+    @Embedded
+    private Feedback feedback;
 
     // Construtor
-    public Prova(String nome) {
+    public Prova(NomeProva nome) {
         this.nome = nome;
-        this.nota = null;
+        this.nota = new Nota(null);  // Nota inicial nula permitida
         this.completo = false;
-        this.feedback = null;
+        this.feedback = new Feedback(null);
     }
 
     public Prova() {
     }
-    
+
     // Método para avaliar prova com nota e feedback
-    public void avaliarProva(Double nota, String feedback) {
+    public void avaliarProva(Nota nota, Feedback feedback) {
         if (!this.completo) {
             throw new ProvaIncompletaException("A prova ainda está incompleta. Não é possível avaliá-la.");
         }
@@ -39,8 +45,8 @@ public class Prova {
         this.completo = true;
     }
 
-    // Método para avaliar prova apenas com nota (com alerta)
-    public void avaliarProva(Double nota) {
+    // Método para avaliar prova apenas com nota
+    public void avaliarProva(Nota nota) {
         if (!this.completo) {
             throw new ProvaIncompletaException("A prova ainda está incompleta. Não é possível avaliá-la.");
         }
@@ -49,11 +55,11 @@ public class Prova {
     }
 
     // Getters e Setters
-    public String getNome() {
+    public NomeProva getNome() {
         return nome;
     }
 
-    public Double getNota() {
+    public Nota getNota() {
         return nota;
     }
 
@@ -61,15 +67,15 @@ public class Prova {
         return completo;
     }
 
-    public String getFeedback() {
+    public Feedback getFeedback() {
         return feedback;
     }
 
-    public void setNome(String nome) {
+    public void setNome(NomeProva nome) {
         this.nome = nome;
     }
 
-    public void setNota(Double nota) {
+    public void setNota(Nota nota) {
         this.nota = nota;
     }
 
@@ -77,7 +83,7 @@ public class Prova {
         this.completo = completo;
     }
 
-    public void setFeedback(String feedback) {
+    public void setFeedback(Feedback feedback) {
         this.feedback = feedback;
     }
 }

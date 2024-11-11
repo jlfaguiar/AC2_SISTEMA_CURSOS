@@ -2,6 +2,11 @@ package com.cursos.sistema_cursos.controller;
 
 import com.cursos.sistema_cursos.model.Aluno;
 import com.cursos.sistema_cursos.model.Prova;
+import com.cursos.sistema_cursos.value_objects.Feedback;
+import com.cursos.sistema_cursos.value_objects.Genero;
+import com.cursos.sistema_cursos.value_objects.Nome;
+import com.cursos.sistema_cursos.value_objects.NomeProva;
+import com.cursos.sistema_cursos.value_objects.Nota;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -16,7 +21,7 @@ public class SistemaCursosController {
     // Adicionar um novo aluno
     @PostMapping("/alunos/adicionar")
     public Aluno adicionarAluno(@RequestParam String nome, @RequestParam boolean genero) {
-        Aluno aluno = new Aluno(nome, genero);
+        Aluno aluno = new Aluno(new Nome(nome), new Genero(genero));
         alunos.add(aluno);
         return aluno;
     }
@@ -32,7 +37,7 @@ public class SistemaCursosController {
     public Aluno adicionarProva(@PathVariable String nome, @RequestParam String provaNome) {
         Aluno aluno = encontrarAlunoPorNome(nome);
         if (aluno != null) {
-            Prova prova = new Prova(provaNome);
+            Prova prova = new Prova(new NomeProva(provaNome));
             aluno.adicionarProva(prova);
             return aluno;
         } else {
@@ -47,11 +52,11 @@ public class SistemaCursosController {
         Aluno aluno = encontrarAlunoPorNome(nome);
         if (aluno != null) {
             for (Prova prova : aluno.getProvas()) {
-                if (prova.getNome().equals(provaNome)) {
+                if (prova.getNome().getNome().equals(provaNome)) { // Comparação do valor de NomeProva
                     if (feedback != null) {
-                        prova.avaliarProva(nota, feedback);
+                        prova.avaliarProva(new Nota(nota), new Feedback(feedback));
                     } else {
-                        prova.avaliarProva(nota); // Alerta sobre o feedback
+                        prova.avaliarProva(new Nota(nota)); // Alerta sobre o feedback
                     }
                     return prova;
                 }
@@ -83,6 +88,9 @@ public class SistemaCursosController {
 
     // Método auxiliar para encontrar aluno por nome
     private Aluno encontrarAlunoPorNome(String nome) {
-        return alunos.stream().filter(aluno -> aluno.getNome().equals(nome)).findFirst().orElse(null);
+        return alunos.stream()
+                .filter(aluno -> aluno.getNome().getNome().equals(nome)) // Comparação do valor de Nome
+                .findFirst()
+                .orElse(null);
     }
 }

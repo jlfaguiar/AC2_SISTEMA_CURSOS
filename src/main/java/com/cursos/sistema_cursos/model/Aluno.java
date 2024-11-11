@@ -1,18 +1,24 @@
 package com.cursos.sistema_cursos.model;
 
+import com.cursos.sistema_cursos.value_objects.Genero;
+import com.cursos.sistema_cursos.value_objects.Nome;
 import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name="tb_alunos")
+@Table(name = "tb_alunos")
 public class Aluno {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String nome;
-    private boolean genero;
+
+    @Embedded
+    private Nome nome;
+
+    @Embedded
+    private Genero genero;
 
     // Relacionamento "Um para Muitos" entre Aluno e Prova
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -20,7 +26,7 @@ public class Aluno {
     private List<Prova> provas;
 
     // Construtor
-    public Aluno(String nome, boolean genero) {
+    public Aluno(Nome nome, Genero genero) {
         this.nome = nome;
         this.genero = genero;
         this.provas = new ArrayList<>();
@@ -28,18 +34,18 @@ public class Aluno {
 
     public Aluno() {
     }
-    
+
     // Adicionar uma prova
     public void adicionarProva(Prova prova) {
         provas.add(prova);
     }
 
     // Getters e Setters
-    public String getNome() {
+    public Nome getNome() {
         return nome;
     }
 
-    public boolean isGenero() {
+    public Genero getGenero() {
         return genero;
     }
 
@@ -47,11 +53,11 @@ public class Aluno {
         return provas;
     }
 
-    public void setNome(String nome) {
+    public void setNome(Nome nome) {
         this.nome = nome;
     }
 
-    public void setGenero(boolean genero) {
+    public void setGenero(Genero genero) {
         this.genero = genero;
     }
 
