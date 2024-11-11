@@ -4,7 +4,11 @@ import jakarta.persistence.Embeddable;
 
 @Embeddable
 public class Feedback {
-    private final String feedback;
+    private String feedback;
+
+    // Construtor sem argumentos para o JPA
+    public Feedback() {
+    }
 
     public Feedback(String feedback) {
         this.feedback = feedback;

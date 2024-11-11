@@ -4,7 +4,11 @@ import jakarta.persistence.Embeddable;
 
 @Embeddable
 public class NomeProva {
-    private final String nome;
+    private String nome;
+
+    // Construtor sem argumentos para o JPA
+    public NomeProva() {
+    }
 
     public NomeProva(String nome) {
         if (nome == null || nome.isEmpty()) {

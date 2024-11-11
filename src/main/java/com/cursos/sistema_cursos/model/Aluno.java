@@ -64,4 +64,9 @@ public class Aluno {
     public void setProvas(List<Prova> provas) {
         this.provas = provas;
     }
+
+	public Object getId() {
+		// TODO Auto-generated method stub
+		return this.id;
+	}
 }

@@ -4,7 +4,11 @@ import jakarta.persistence.Embeddable;
 
 @Embeddable
 public class Nota {
-    private final Double nota;
+    private Double nota;
+
+    // Construtor sem argumentos para o JPA
+    public Nota() {
+    }
 
     public Nota(Double nota) {
         if (nota != null && (nota < 0 || nota > 10)) {

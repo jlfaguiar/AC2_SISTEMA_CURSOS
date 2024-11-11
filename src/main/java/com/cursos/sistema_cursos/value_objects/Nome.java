@@ -1,7 +1,14 @@
 package com.cursos.sistema_cursos.value_objects;
 
+import jakarta.persistence.Embeddable;
+
+@Embeddable
 public class Nome {
-    private final String nome;
+    private String nome;
+
+    // Construtor sem argumentos para o JPA
+    public Nome() {
+    }
 
     public Nome(String nome) {
         if (nome == null || nome.isEmpty()) {
@@ -12,19 +19,6 @@ public class Nome {
 
     public String getNome() {
         return nome;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Nome nome1 = (Nome) o;
-        return nome.equals(nome1.nome);
-    }
-
-    @Override
-    public int hashCode() {
-        return nome.hashCode();
     }
 
     @Override

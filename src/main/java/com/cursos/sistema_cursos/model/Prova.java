@@ -86,4 +86,9 @@ public class Prova {
     public void setFeedback(Feedback feedback) {
         this.feedback = feedback;
     }
+
+	public Long getId() {
+		// TODO Auto-generated method stub
+		return this.id;
+	}
 }
