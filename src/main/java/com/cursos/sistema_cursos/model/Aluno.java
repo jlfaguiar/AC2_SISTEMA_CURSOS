@@ -21,8 +21,8 @@ public class Aluno {
     private Genero genero;
 
     // Relacionamento "Um para Muitos" entre Aluno e Prova
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "aluno_id") // Isso vai adicionar uma coluna aluno_id na tabela de Provas
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "aluno_id")
     private List<Prova> provas;
 
     // Construtor
