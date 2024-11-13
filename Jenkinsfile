@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        REPO_NAME = "jlfaguiar/ac2devops"
+        REPO_NAME = "jlfaguiar/ac2devops"  // Nome do repositório Docker (Docker Hub, por exemplo)
         DOCKER_TAG = "latest"
     }
 
@@ -20,11 +20,8 @@ pipeline {
             }
             steps {
                 script {
-                    // Compila o projeto e cria o JAR
-                    bat 'mvn clean package -DskipTests -Dspring.profiles.active=test'
-
-                    // Constrói a imagem Docker usando o Dockerfile e a nomeia para DEV
-                    bat "docker build -t ${IMAGE_NAME} ."
+                    // Constrói a imagem Docker diretamente a partir do Dockerfile e a nomeia para DEV
+                    bat "docker build --build-arg PROFILE=${PROFILE} -t ${IMAGE_NAME} ."
 
                     // Faz o push da imagem para o repositório Docker
                     bat "docker login -u %DOCKER_USERNAME% -p %DOCKER_PASSWORD%"
@@ -47,17 +44,13 @@ pipeline {
 
         stage('Build and Push Image for Staging') {
             environment {
-                PROFILE = 'staging'  // Define o perfil como "staging"
+                PROFILE = 'staging'
                 IMAGE_NAME = "${REPO_NAME}:${PROFILE}-${DOCKER_TAG}"
-                SPRING_PROFILES_ACTIVE = "staging"  // Define o perfil Spring como "staging"
             }
             steps {
                 script {
-                    // Compila o projeto com o perfil "staging"
-                    bat "mvn clean package -DskipTests -Dspring.profiles.active=${SPRING_PROFILES_ACTIVE}"
-
-                    // Constrói a imagem Docker para Staging e a envia para o repositório Docker
-                    bat "docker build -t ${IMAGE_NAME} ."
+                    // Constrói a imagem Docker diretamente a partir do Dockerfile e a nomeia para Staging
+                    bat "docker build --build-arg PROFILE=${PROFILE} -t ${IMAGE_NAME} ."
                     bat "docker push ${IMAGE_NAME}"
                 }
             }
@@ -82,7 +75,6 @@ pipeline {
             environment {
                 PROFILE = 'prod'
                 IMAGE_NAME = "${REPO_NAME}:${PROFILE}-${DOCKER_TAG}"
-                SPRING_PROFILES_ACTIVE = "prod"  // Define o perfil Spring como "prod"
             }
             steps {
                 script {
