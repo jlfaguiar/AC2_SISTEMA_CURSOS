@@ -1,14 +1,28 @@
-# Usar uma imagem base do OpenJDK
-FROM openjdk:17-jdk-slim
+# Etapa de build usando Maven para compilar o projeto
+FROM maven:3.8.5-openjdk-17 AS builder
 
-# Definir o diretório de trabalho dentro do container
 WORKDIR /app
 
-# Copiar o arquivo JAR do projeto para o container
-COPY target/ac2-0.0.1-SNAPSHOT.jar app.jar
+# Copia o código-fonte para o container de build
+COPY . .
 
-# Expor a porta em que o projeto vai rodar (exemplo: 8080)
+# Compila o código e cria o JAR
+RUN mvn clean package -DskipTests
+
+# Etapa final usando OpenJDK para rodar a aplicação
+FROM openjdk:17-jdk-slim
+
+WORKDIR /app
+
+# Define o argumento de perfil e a variável de ambiente no container
+ARG PROFILE=test
+ENV SPRING_PROFILES_ACTIVE=$PROFILE
+
+# Copia o JAR compilado da etapa de build
+COPY --from=builder /app/target/ac2-0.0.1-SNAPSHOT.jar app.jar
+
+# Expõe a porta de execução da aplicação
 EXPOSE 8080
 
-# Comando para rodar o aplicativo
+# Comando para rodar a aplicação
 CMD ["java", "-jar", "app.jar"]

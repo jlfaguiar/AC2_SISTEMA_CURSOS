@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        REPO_NAME = "jlfaguiar/ac2devops"  // Nome do repositório Docker (Docker Hub, por exemplo)
+        REPO_NAME = "jlfaguiar/ac2devops"
         DOCKER_TAG = "latest"
     }
 
@@ -13,88 +13,27 @@ pipeline {
             }
         }
 
-        stage('Build and Push Image for DEV') {
+        stage('Build and Push Image') {
             environment {
-                PROFILE = 'test'  // Define o perfil como "test" para o ambiente DEV
+                PROFILE = 'test'  // Alterar para 'staging' ou 'prod' conforme o ambiente
                 IMAGE_NAME = "${REPO_NAME}:${PROFILE}-${DOCKER_TAG}"
             }
             steps {
                 script {
-                    // Constrói a imagem Docker diretamente a partir do Dockerfile e a nomeia para DEV
+                    // Constrói a imagem Docker usando o perfil especificado e faz o push para o repositório
                     bat "docker build --build-arg PROFILE=${PROFILE} -t ${IMAGE_NAME} ."
-
-                    // Faz o push da imagem para o repositório Docker
                     bat "docker login -u %DOCKER_USERNAME% -p %DOCKER_PASSWORD%"
                     bat "docker push ${IMAGE_NAME}"
                 }
             }
         }
 
-        stage('Deploy to DEV') {
+        stage('Deploy') {
             environment {
-                PROFILE = 'test'
+                PROFILE = 'test'  // Alterar conforme o ambiente de deploy
             }
             steps {
                 script {
-                    // Sobe os serviços com docker-compose no ambiente "DEV"
-                    bat "set PROFILE=${PROFILE} && docker-compose -f docker-compose.yml up -d --build"
-                }
-            }
-        }
-
-        stage('Build and Push Image for Staging') {
-            environment {
-                PROFILE = 'staging'
-                IMAGE_NAME = "${REPO_NAME}:${PROFILE}-${DOCKER_TAG}"
-            }
-            steps {
-                script {
-                    // Constrói a imagem Docker diretamente a partir do Dockerfile e a nomeia para Staging
-                    bat "docker build --build-arg PROFILE=${PROFILE} -t ${IMAGE_NAME} ."
-                    bat "docker push ${IMAGE_NAME}"
-                }
-            }
-        }
-
-        stage('Deploy to Staging') {
-            environment {
-                PROFILE = 'staging'
-            }
-            steps {
-                script {
-                    // Sobe os serviços com docker-compose no ambiente "staging"
-                    bat "set PROFILE=${PROFILE} && docker-compose -f docker-compose.yml up -d --build"
-                }
-            }
-        }
-
-        stage('Promote Image to Production') {
-            when {
-                branch 'main' // Promove para produção apenas quando estiver na branch principal
-            }
-            environment {
-                PROFILE = 'prod'
-                IMAGE_NAME = "${REPO_NAME}:${PROFILE}-${DOCKER_TAG}"
-            }
-            steps {
-                script {
-                    // Marca a imagem de Staging para Produção
-                    bat "docker tag ${REPO_NAME}:staging-${DOCKER_TAG} ${IMAGE_NAME}"
-                    bat "docker push ${IMAGE_NAME}"
-                }
-            }
-        }
-
-        stage('Deploy to Production') {
-            when {
-                branch 'main'
-            }
-            environment {
-                PROFILE = 'prod'
-            }
-            steps {
-                script {
-                    // Sobe os serviços com docker-compose no ambiente "prod"
                     bat "set PROFILE=${PROFILE} && docker-compose -f docker-compose.yml up -d --build"
                 }
             }
