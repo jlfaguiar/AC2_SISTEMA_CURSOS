@@ -4,6 +4,8 @@ pipeline {
     environment {
         REPO_NAME = "jlfaguiar/ac2devops"
         DOCKER_TAG = "latest"
+        // O valor do PROFILE será o parâmetro fornecido no Jenkins
+        IMAGE_NAME = "${REPO_NAME}:${PROFILE}-${DOCKER_TAG}"
     }
 
     stages {
@@ -14,13 +16,8 @@ pipeline {
         }
 
         stage('Build and Push Image') {
-            environment {
-                PROFILE = 'test'  // Alterar para 'staging' ou 'prod' conforme o ambiente
-                IMAGE_NAME = "${REPO_NAME}:${PROFILE}-${DOCKER_TAG}"
-            }
             steps {
                 script {
-                    // Constrói a imagem Docker usando o perfil especificado e faz o push para o repositório
                     bat "docker build --build-arg PROFILE=${PROFILE} -t ${IMAGE_NAME} ."
                     bat "docker login -u %DOCKER_USERNAME% -p %DOCKER_PASSWORD%"
                     bat "docker push ${IMAGE_NAME}"
@@ -29,9 +26,6 @@ pipeline {
         }
 
         stage('Deploy') {
-            environment {
-                PROFILE = 'test'  // Alterar conforme o ambiente de deploy
-            }
             steps {
                 script {
                     bat "set PROFILE=${PROFILE} && docker-compose -f docker-compose.yml up -d --build"
