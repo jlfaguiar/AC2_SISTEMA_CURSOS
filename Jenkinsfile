@@ -13,9 +13,9 @@ pipeline {
             }
         }
 
-        stage('Build and Push Image for Staging') {
+        stage('Build and Push Image for DEV') {
             environment {
-                PROFILE = 'staging'  // Define o perfil como "staging"
+                PROFILE = 'test'  // Define o perfil como "test" para o ambiente DEV
                 IMAGE_NAME = "${REPO_NAME}:${PROFILE}-${DOCKER_TAG}"
             }
             steps {
@@ -23,11 +23,37 @@ pipeline {
                     // Compila o projeto e cria o JAR
                     sh 'mvn clean package -DskipTests'
 
-                    // Constrói a imagem Docker usando o Dockerfile e a nomeia para Staging
+                    // Constrói a imagem Docker usando o Dockerfile e a nomeia para DEV
                     sh "docker build -t ${IMAGE_NAME} ."
 
                     // Faz o push da imagem para o repositório Docker
                     sh "docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD"
+                    sh "docker push ${IMAGE_NAME}"
+                }
+            }
+        }
+
+        stage('Deploy to DEV') {
+            environment {
+                PROFILE = 'test'
+            }
+            steps {
+                script {
+                    // Sobe os serviços com docker-compose no ambiente "DEV"
+                    sh "PROFILE=${PROFILE} docker-compose -f docker-compose.yml up -d --build"
+                }
+            }
+        }
+
+        stage('Build and Push Image for Staging') {
+            environment {
+                PROFILE = 'staging'  // Define o perfil como "staging"
+                IMAGE_NAME = "${REPO_NAME}:${PROFILE}-${DOCKER_TAG}"
+            }
+            steps {
+                script {
+                    // Constrói a imagem Docker para Staging e a envia para o repositório Docker
+                    sh "docker build -t ${IMAGE_NAME} ."
                     sh "docker push ${IMAGE_NAME}"
                 }
             }
