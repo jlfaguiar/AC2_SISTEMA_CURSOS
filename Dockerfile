@@ -5,7 +5,7 @@ FROM openjdk:17-jdk-slim
 WORKDIR /app
 
 # Copiar o arquivo JAR do projeto para o container
-COPY target/*.jar app.jar
+COPY target*.jar app.jar
 
 # Expor a porta em que o projeto vai rodar (exemplo: 8080)
 EXPOSE 8080
