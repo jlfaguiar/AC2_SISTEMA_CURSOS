@@ -8,7 +8,7 @@ WORKDIR /app
 COPY target/ac2-0.0.1-SNAPSHOT.jar app.jar
 
 # Expor a porta em que o projeto vai rodar (exemplo: 8080)
-EXPOSE 8080
+EXPOSE 8585
 
 # Comando para rodar o aplicativo
 CMD ["java", "-jar", "app.jar"]

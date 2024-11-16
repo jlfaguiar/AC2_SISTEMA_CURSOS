@@ -17,5 +17,6 @@ services:
       DB_HOST: database
     ports:
       - "8585:8080"
+    command: ["java", "-jar", "app.jar"]
 volumes:
   db-volume:
