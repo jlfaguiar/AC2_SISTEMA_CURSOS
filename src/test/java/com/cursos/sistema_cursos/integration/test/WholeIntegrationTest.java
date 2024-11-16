@@ -10,8 +10,12 @@ import com.cursos.sistema_cursos.value_objects.NomeProva;
 import com.cursos.sistema_cursos.value_objects.Nota;
 import com.cursos.sistema_cursos.value_objects.Feedback;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.List;
 
@@ -20,6 +24,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@ActiveProfiles("test")
+@ExtendWith(SpringExtension.class)
 @DataJpaTest
 public class WholeIntegrationTest {
 
