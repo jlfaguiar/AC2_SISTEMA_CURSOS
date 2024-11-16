@@ -1,14 +1,13 @@
-# Usar uma imagem base do OpenJDK
-FROM openjdk:17-jdk-slim
+FROM openjdk:17
 
-# Definir o diretório de trabalho dentro do container
-WORKDIR /app
+# Set the working directory in the container
+WORKDIR /ac2
 
-# Copiar o arquivo JAR do projeto para o container
-COPY target/ac2-0.0.1-SNAPSHOT.jar app.jar
+# Copy the JAR file into the container at /educacaoGamificada
+COPY target/ac2-0.0.1-SNAPSHOT.jar /ac2/ac2-0.0.1-SNAPSHOT.jar
 
-# Expor a porta em que o projeto vai rodar (exemplo: 8080)
+# Expose the port that your application will run on
 EXPOSE 8585
 
-# Comando para rodar o aplicativo
-CMD ["java", "-jar", "app.jar"]
+# Specify the command to run on container start
+CMD ["java", "-jar", "ac2-0.0.1-SNAPSHOT.jar"]
