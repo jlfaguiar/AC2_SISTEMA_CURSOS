@@ -1,35 +1,31 @@
 pipeline {
-  agent any
-
-  stages {
-    stage('Checkout') {
-      steps {
-        checkout scm
-      }
+    agent any
+    environment {
+        DOCKER_IMAGE = "jlfaguiar/ac2-staging:${env.BUILD_ID}"
+        REGISTRY_CREDENTIALS = 'Dockertoken'
     }
-
-    stage('Start container') {
-      steps {
-        echo 'Starting container from Docker Hub...'
-        bat 'docker-compose -f docker-compose.staging.yml pull' // Baixa a imagem do Docker Hub
-        bat 'docker-compose -f docker-compose.staging.yml up -d --no-color'
-        sleep time: 60, unit: 'SECONDS' // Aumenta o tempo para o serviço Spring Boot iniciar
-        bat 'docker-compose -f docker-compose.staging.yml logs' // Verifica os logs para conferir o status do Spring Boot
-        bat 'docker-compose -f docker-compose.staging.yml ps' // Verifica o status do container
-      }
+    stages {
+        stage('Build') {
+            steps {
+                echo "Building staging environment"
+                sh 'mvn clean install'
+            }
+        }
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    docker.withRegistry('https://index.docker.io/v1/', REGISTRY_CREDENTIALS) {
+                        def image = docker.build(DOCKER_IMAGE)
+                        image.push()
+                    }
+                }
+            }
+        }
+        stage('Deploy') {
+            steps {
+                echo "Deploying staging container"
+                sh 'docker-compose -f docker-compose.staging.yml up -d'
+            }
+        }
     }
-
-    stage('Run tests against the container') {
-      steps {
-        bat 'curl http://localhost:8686 || echo "Service not responding"'
-      }
-    }
-  }
-
-  post {
-    always {
-      echo 'Pipeline completed'
-      // Não derruba mais o container aqui
-    }
-  }
 }
